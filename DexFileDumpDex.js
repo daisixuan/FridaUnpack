@@ -14,7 +14,7 @@ function getAppDataPath() {
     if (!path) {
         path = "/sdcard"
     }
-    path = "/sdcard/dexcache"
+    path = "/sdcard"
 
     return path
 

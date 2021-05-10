@@ -5,8 +5,8 @@ var addrGetObsoleteDexCache;
 var addrGetDexFile;
 var funcGetDexFile;
 
-var savepath = "/sdcard/dexcache";
-//savepath = "/data/data/com.goodl.aes.test-2"
+var savepath = "/sdcard";
+//savepath = "/data/data/xxx"
 var dex_maps = {};
 var artmethod_maps = {};
 var LinkCode_artmethod_maps = {};
@@ -133,11 +133,7 @@ function hook_LinkCode(){
         console.log("LinkCode_addr", LinkCode_addr)
         Interceptor.attach(LinkCode_addr,{
             onEnter:function (args){
-                if (parseFloat(Java.androidVersion) >= 8){
-                    this.artmethodptr = args[1];
-                }else{
-                    this.artmethodptr = args[0];
-                }
+                this.artmethodptr = args[1];
             },onLeave: function (retval){
                     this.dexfileptr = funcGetDexFile(ptr(this.artmethodptr), ptr(addrGetObsoleteDexCache));
                     var dexfilebegin = Memory.readPointer(ptr(this.dexfileptr).add(Process.pointerSize * 1));
@@ -287,10 +283,10 @@ function dealwithClassLoader(classloaderobj) {
                         var ClassnameList = dexfileclass.getClassNameList(mcookie);
                         ClassnameList.forEach(function (className){
                             try{
-                                if (className.includes("csair")){
+                                //if (className.includes("csair")){
                                     var loadclass = classloaderobj.loadClass(className);
                                     console.log("after loadclass->", loadclass);
-                                }
+                                //}
                             }catch (e) {
                                 console.warn(e)
                             }
@@ -350,18 +346,6 @@ function fart(){
     dumpLinkCodego();
 }
 
-function test(addr){
-    var parseArtMethodaddr = Module.findExportByName("libzed.so","parseArtMethod");
-    console.log(parseArtMethodaddr);
-    var parseArtMethodFunc = new NativeFunction(parseArtMethodaddr,"pointer",["pointer","pointer","pointer"]);
-    console.log(parseArtMethodFunc);
-    var begin = Memory.alloc(0x100);
-    var size = Memory.alloc(0x100);
-    console.log(begin,size)
-    parseArtMethodFunc(ptr(addr),begin,size);
-    console.log(begin,size)
-
-}
 init()
 FindArtAddr()
 
